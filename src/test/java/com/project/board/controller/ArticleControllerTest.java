@@ -47,7 +47,7 @@ class ArticleControllerTest {
         //when&then
         mvc.perform(get("/articles/1"))
                 .andExpect(status().isOk()) //상태 검사
-                .andExpect(content().contentType(MediaType.TEXT_HTML)) //타입검사
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML)) //타입검사
                 .andExpect(view().name("articles/detail"))
                 .andExpect(model().attributeExists("article")) //데이터 검사
                 .andExpect(model().attributeExists("articleComments"));
@@ -62,7 +62,7 @@ class ArticleControllerTest {
         //when&then
         mvc.perform(get("/articles/search"))
                 .andExpect(status().isOk()) //상태 검사
-                .andExpect(content().contentType(MediaType.TEXT_HTML)) //타입검사
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML)) //타입검사
                 .andExpect(view().name("articles/search"));
     }
 
@@ -75,7 +75,7 @@ class ArticleControllerTest {
         //when&then
         mvc.perform(get("/articles/search-hashtag"))
                 .andExpect(status().isOk()) //상태 검사
-                .andExpect(content().contentType(MediaType.TEXT_HTML)) //타입검사
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML)) //타입검사
                 .andExpect(view().name("articles/search-hashtag"));
     }
 }
