@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import com.project.board.config.JpaConfig;
 import com.project.board.domain.Article;
+import com.project.board.domain.UserAccount;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,12 +19,15 @@ class JpaRepositoryTest {
 
     private final ArticleRepository articleRepository;
     private final ArticleCommentRepository articleCommentRepository;
+    private final UserAccountRepository userAccountRepository;
 
     JpaRepositoryTest(
             @Autowired ArticleRepository articleRepository,
-            @Autowired ArticleCommentRepository articleCommentRepository) {
+            @Autowired ArticleCommentRepository articleCommentRepository,
+            @Autowired UserAccountRepository userAccountRepository) {
         this.articleRepository = articleRepository;
         this.articleCommentRepository = articleCommentRepository;
+        this.userAccountRepository = userAccountRepository;
     }
 
     @DisplayName("select 테스트")
@@ -45,13 +49,13 @@ class JpaRepositoryTest {
     public void givenTestData_whenInserting_thenWorksFine(){
         //given
         long previousCount = articleRepository.count();
-        Article article = Article.of("제목","내용","#spirng");
-
+        UserAccount userAccount = userAccountRepository.save(UserAccount.of("uno", "pw", null, null, null));
+        Article article = Article.of(userAccount, "new article", "new content", "#spring");
         //when
-        Article saveArticle = articleRepository.save(article);
+        articleRepository.save(article);
 
         //then
-        assertThat(articleRepository.count()).isEqualTo(previousCount+1);
+        assertThat(articleRepository.count()).isEqualTo(previousCount + 1);
     }
 
     @DisplayName("update 테스트")
