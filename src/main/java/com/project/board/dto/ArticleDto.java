@@ -22,7 +22,7 @@ public record ArticleDto(
                 modifiedBy);
     }
 
-    public static ArticleDto from(Article entity) {
+    public static ArticleDto from(Article entity) { //Article entity 를 dto 로 변환
         return new ArticleDto(
                 entity.getId(),
                 UserAccountDto.from(entity.getUserAccount()),
@@ -36,7 +36,7 @@ public record ArticleDto(
         );
     }
 
-    public Article toEntity() {
+    public Article toEntity() { //dto 를 entity 로 변환
         return Article.of(
                 userAccountDto.toEntity(),
                 title,
