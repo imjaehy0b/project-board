@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import com.project.board.config.SecurityConfig;
+import com.project.board.domain.type.SearchType;
 import com.project.board.dto.ArticleWithCommentsDto;
 import com.project.board.dto.UserAccountDto;
 import com.project.board.service.ArticleService;
@@ -65,6 +66,30 @@ class ArticleControllerTest {
         then(articleService).should().searchArticles(eq(null),eq(null),any(Pageable.class));
         then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
     }
+
+    @DisplayName("[view][GET] 게시글 리스트 (게시판) 페이지 - 검색어와 함께 호출")
+    @Test
+    public void givenSearchKeyword_whenSearchingArticlesView_thenReturnArticlesView() throws Exception {
+        //given
+        SearchType searchType = SearchType.TITLE;
+        String searchValue = "title";
+        given(articleService.searchArticles(eq(searchType),eq(searchValue),any(Pageable.class))).willReturn(Page.empty());
+        given(paginationService.getPaginationBarNumbers(anyInt(),anyInt())).willReturn(List.of(0,1,2,3,4));
+
+        //when&then
+        mvc.perform(get("/articles")
+                        .queryParam("searchType",searchType.name())
+                        .queryParam("searchValue",searchValue)
+                )
+                .andExpect(status().isOk()) //상태 검사
+                .andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML)) //타입검사
+                .andExpect(view().name("articles/index")) //뷰 체크
+                .andExpect(model().attributeExists("articles")) //데이터가 존재하는지 체크
+                .andExpect(model().attributeExists("searchTypes")); //데이터가 존재하는지 체크
+        then(articleService).should().searchArticles(eq(searchType),eq(searchValue),any(Pageable.class));
+        then(paginationService).should().getPaginationBarNumbers(anyInt(), anyInt());
+    }
+
 
     @DisplayName("[view][GET] 게시글 리스트 (게시판) 페이지 - 페이징, 정렬 기능")
     @Test
