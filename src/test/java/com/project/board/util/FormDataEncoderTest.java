@@ -3,6 +3,7 @@ package com.project.board.util;
 import static org.assertj.core.api.Assertions.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.project.board.config.SecurityConfig;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +14,7 @@ import org.springframework.context.annotation.Import;
 
 
 @DisplayName("테스트 도구 - Form 데이터 인코더")
-@Import({FormDataEncoder.class, ObjectMapper.class})
+@Import({SecurityConfig.class,FormDataEncoder.class, ObjectMapper.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = Void.class)
 class FormDataEncoderTest {
 
