@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
@@ -25,7 +26,7 @@ import lombok.ToString.Exclude;
         @Index(columnList = "title"),
         @Index(columnList = "hashtag"),
         @Index(columnList = "createdAt"),
-        @Index(columnList = "createdBy"),
+        @Index(columnList = "createdBy")
 })
 @Entity
 public class Article extends AuditingFields {
@@ -34,22 +35,21 @@ public class Article extends AuditingFields {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter @ManyToOne(optional = false) private UserAccount userAccount; // 유저 정보 (ID)
+    @Setter @ManyToOne(optional = false) @JoinColumn(name = "userId") private UserAccount userAccount; // 유저 정보 (ID)
 
-    @Setter @Column(nullable = false) private String title; //제목
-    @Setter @Column(nullable = false,length = 10000) private String content; //본문
-    //nullable 기본값이 true 이기에 생략
-    @Setter private String hashtag; //해시태그
+    @Setter @Column(nullable = false) private String title; // 제목
+    @Setter @Column(nullable = false, length = 10000) private String content; // 본문
 
+    @Setter private String hashtag; // 해시태그
+
+    @ToString.Exclude
     @OrderBy("createdAt DESC")
-    @Exclude
     @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
     private final Set<ArticleComment> articleComments = new LinkedHashSet<>();
 
 
     protected Article() {}
 
-    // private 으로 막아버리고 팩토리 메서드 형식으로 제공할 수 있게 작업
     private Article(UserAccount userAccount, String title, String content, String hashtag) {
         this.userAccount = userAccount;
         this.title = title;
@@ -57,24 +57,20 @@ public class Article extends AuditingFields {
         this.hashtag = hashtag;
     }
 
-    //팩토리 메서드
     public static Article of(UserAccount userAccount, String title, String content, String hashtag) {
         return new Article(userAccount, title, content, hashtag);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Article article)) {
-            return false;
-        }
-        return id != null && Objects.equals(id, article.id);
+        if (this == o) return true;
+        if (!(o instanceof Article article)) return false;
+        return id != null && id.equals(article.id);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }
